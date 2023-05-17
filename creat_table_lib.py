@@ -46,7 +46,7 @@ contents2 = [(12, "Тихий дон", "Михал Шолохов", "Роман-
              (29, "Сказка о царе Салтане", "Александр Пушкин", "Сказка", 1831, 1),
              (30, "Ночной дозор", "Сергей Лукьяненко", "Ужасы", 1998, 1)]
 cur.executemany("INSERT OR REPLACE INTO books VALUES(?, ?, ?, ?, ?, ?);", contents2)
-#новый столбез наличия книги
+#новый столбез наличия книг
 # cur.execute('ALTER TABLE books ADD availability TEXT')
 # cur.execute('ALTER TABLE books ALTER COLUMN availability INTEGER')
 # сохранение изменений и закрытие соединения

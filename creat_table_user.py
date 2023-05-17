@@ -28,6 +28,6 @@ contents = [
 ]
 cur.executemany("INSERT OR REPLACE INTO users VALUES(?, ?, ?, ?);", contents)
 
-# сохранение изменений и закрытие соединения
+# сохранение изменений и закрытие соединени
 conn.commit()
 conn.close()
