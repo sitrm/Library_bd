@@ -5,7 +5,7 @@ conn = sqlite3.connect('library.db')
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE IF NOT EXISTS books
-             (book_id INTEGER PRIMARY KEY,
+             (book_id INTEGER PRIMARY KEY AUTOINCREMENT,
              title TEXT,
              author TEXT,
              genre TEXT,

@@ -5,7 +5,7 @@ conn = sqlite3.connect('library.db')
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE IF NOT EXISTS users
-             (user_id INTEGER PRIMARY KEY,
+             (user_id INTEGER PRIMARY KEY AUTOINCREMENT,
              name TEXT,
              rang INTEGER,
              phone TEXT)''')
