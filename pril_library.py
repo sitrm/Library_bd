@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit
 from PyQt5.QtGui import QFont
 import sqlite3
+from datetime import date
 
 
 class LibraryApp(QMainWindow):
@@ -17,7 +18,7 @@ class LibraryApp(QMainWindow):
 
         # создаем графический интерфейс
         self.setWindowTitle('Библиотека')
-        self.setGeometry(100, 100, 500, 500)
+        self.setGeometry(50, 50, 800, 800)
 
         # создаем виджеты для ввода данных
         self.title_label = QLabel('Название книги:', self)
@@ -74,9 +75,60 @@ class LibraryApp(QMainWindow):
         """)
         self.show_button.clicked.connect(self.show_books)
 
+        #кнопка выдачи книг
+        self.issue_button = QPushButton('Выдать книгу', self)
+        self.issue_button.move(400, 350)
+        self.issue_button.setStyleSheet("""
+        QPushButton{
+            font-style: oblique;
+            font-weight: bold;
+            border: 1px solid #1DA1F2;
+            border-radius: 15px;
+            color: #1DA1F2;
+            background-color: #fff;
+        }
+        """)
+        self.issue_button.clicked.connect(self.issue_book)
+
+        #кнопка возврата книги
+        self.return_button = QPushButton('Вернуть книгу', self)
+        self.return_button.setStyleSheet("""
+                QPushButton{
+                    font-style: oblique;
+                    font-weight: bold;
+                    border: 1px solid #1DA1F2;
+                    border-radius: 15px;
+                    color: #1DA1F2;
+                    background-color: #fff;
+                }
+                """)
+        self.return_button.move(510, 350)
+        self.return_button.clicked.connect(self.return_book)
+
         # создаем текстовый виджет для вывода списка книг
         self.output = QTextEdit(self)
-        self.output.setGeometry(20, 220, 360, 200)
+        self.output.setGeometry(20, 220, 360, 350)
+
+        #загаловок
+        self.label = QLabel('Выдача и возврат книг', self)
+        self.label.setGeometry(400, 220, 150, 30)
+        self.label.move(400, 220)
+        self.label.setFont(QFont("Times", 8, QFont.Bold))
+
+        self.name_book_label = QLabel('Название книги:', self)
+        self.name_book_label.move(400, 250)
+        self.name_book_label.setFont(QFont("Times", 8, QFont.Bold))
+        self.name_book_entry = QLineEdit(self, placeholderText='title')
+        self.name_book_entry.move(500, 250)
+
+        self.name_user_label = QLabel('Имя читателя:', self)
+        self.name_user_label.move(400, 300)
+        self.name_user_label.setFont(QFont("Times", 8, QFont.Bold))
+        self.name_user_entry = QLineEdit(self, placeholderText='users(name)')
+        self.name_user_entry.move(500, 300)
+
+
+
 
     # функция для добавления книги в базу данных
     def add_book(self):
@@ -106,10 +158,40 @@ class LibraryApp(QMainWindow):
         # выводим список книг в текстовый виджет
         for book in books:
             self.output.append(f'{book[0]}.  {book[1]}, {book[2]}, {book[3]}, {book[4]}')
+    #функция выдачи книг
+    def issue_book(self):
+        name_book = self.name_book_entry.text()
+        name_user = self.name_user_entry.text()
+        self.cur.execute('''UPDATE books SET available = 0 
+                 WHERE title = ? AND available = 1''', (name_book,))
+        if self.cur.rowcount == 0:
+            self.output.clear()
+            self.output.append(f'Этой книги к сожаление нет в библиотеки! Возьмите другую')
+            return
+        self.cur.execute('''INSERT INTO issue_log (name_user, name_book, data) 
+                         VALUES (?, ?, ?)''', (name_user, name_book, date.today()))
+        self.conn.commit()
+        self.output.clear()
+        self.output.append(f'Книга успешно выдана')
+
+    def return_book(self):
+        name_book = self.name_book_entry.text()
+        self.cur.execute('''SELECT * FROM issue_log WHERE name_book = ?''', (name_book,))
+        issue = self.cur.fetchone()
+        if issue is None:
+            self.output.clear()
+            self.output.append(f'Книга уже возвращена!')
+            return
+        self.cur.execute('''UPDATE books SET available = 1 WHERE title = ?''', (name_book,))
+        self.cur.execute('''DELETE FROM issue_log WHERE id = ?''', (issue[0],))
+        self.conn.commit()
+        self.output.clear()
+        self.output.append(f'Книга {name_book} успешно возвращена!')
 
     def closeEvent(self, event):
         # закрываем соединение с базой данных при закрытии приложения
         self.conn.close()
+
 
 
 if __name__ == '__main__':

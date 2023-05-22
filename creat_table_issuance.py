@@ -4,10 +4,14 @@ import sqlite3
 conn = sqlite3.connect('library.db')
 cur = conn.cursor()
 
-cur.execute('''CREATE TABLE IF NOT EXISTS issues 
+cur.execute('''CREATE TABLE IF NOT EXISTS issue_log
              (id INTEGER PRIMARY KEY AUTOINCREMENT,
-              b_id INTEGER,
-              u_id INTEGER,
-              FOREIGN KEY(b_id) REFERENCES books(book_id),
-              FOREIGN KEY(u_id) REFERENCES readers(user_id))''')
+             name_user TEXT,
+             name_book TEXT,
+             data TEXT, 
+             FOREIGN KEY(name_user) REFERENCES users(name),
+             FOREIGN KEY(name_book) REFERENCES books(title))''')
+
 conn.commit()
+
+
