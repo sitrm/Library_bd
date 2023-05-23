@@ -157,7 +157,7 @@ class LibraryApp(QMainWindow):
         self.output.clear()
         # выводим список книг в текстовый виджет
         for book in books:
-            self.output.append(f'{book[0]}.  {book[1]}, {book[2]}, {book[3]}, {book[4]}')
+            self.output.append(f'{book[0]}.  {book[1]}, {book[2]}, {book[3]}, {book[4]}, {book[5]}')
     #функция выдачи книг
     def issue_book(self):
         name_book = self.name_book_entry.text()
