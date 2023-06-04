@@ -1,6 +1,5 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QVBoxLayout
-from PyQt6.QtGui import QFont
 import sqlite3
 from datetime import date
 
