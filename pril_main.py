@@ -1,11 +1,44 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QVBoxLayout
 from PyQt5.QtGui import QFont
 import sqlite3
 from datetime import date
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-class LibraryApp(QMainWindow):
+    def initUI(self):
+        self.setWindowTitle('Меню')
+        self.setGeometry(100, 100, 300, 200)
+
+        layout = QVBoxLayout()
+        
+        btn_books = QPushButton('Книги', self)
+        btn_books.clicked.connect(self.openBooksWindow)
+        btn_users = QPushButton('Пользователи', self)
+
+        btn_issue = QPushButton('Выдача/возврат книг', self)
+        btn_issue.clicked.connect(self.openIssueWindow)
+
+        layout.addWidget(btn_books)
+        layout.addWidget(btn_users)
+        layout.addWidget(btn_issue)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+    def openBooksWindow(self):
+        self.books_window = BooksApp()
+        self.books_window.show()
+
+    def openIssueWindow(self):
+        self.issue_window = IssueApp()
+        self.issue_window.show()
+
+class BooksApp(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -18,7 +51,7 @@ class LibraryApp(QMainWindow):
 
         # создаем графический интерфейс
         self.setWindowTitle('Библиотека')
-        self.setGeometry(50, 50, 800, 800)
+        self.setGeometry(50, 50, 500, 500)
 
         # создаем виджеты для ввода данных
         self.title_label = QLabel('Название книги:', self)
@@ -75,57 +108,11 @@ class LibraryApp(QMainWindow):
         """)
         self.show_button.clicked.connect(self.show_books)
 
-        # кнопка выдачи книг
-        self.issue_button = QPushButton('Выдать книгу', self)
-        self.issue_button.move(400, 350)
-        self.issue_button.setStyleSheet("""
-        QPushButton{
-            font-style: oblique;
-            font-weight: bold;
-            border: 1px solid #1DA1F2;
-            border-radius: 15px;
-            color: #1DA1F2;
-            background-color: #fff;
-        }
-        """)
-        self.issue_button.clicked.connect(self.issue_book)
-
-        # кнопка возврата книги
-        self.return_button = QPushButton('Вернуть книгу', self)
-        self.return_button.setStyleSheet("""
-                QPushButton{
-                    font-style: oblique;
-                    font-weight: bold;
-                    border: 1px solid #1DA1F2;
-                    border-radius: 15px;
-                    color: #1DA1F2;
-                    background-color: #fff;
-                }
-                """)
-        self.return_button.move(510, 350)
-        self.return_button.clicked.connect(self.return_book)
 
         # создаем текстовый виджет для вывода списка книг
         self.output = QTextEdit(self)
         self.output.setGeometry(20, 220, 360, 350)
 
-        # загаловок
-        self.label = QLabel('Выдача и возврат книг', self)
-        self.label.setGeometry(400, 220, 150, 30)
-        self.label.move(400, 220)
-        self.label.setFont(QFont("Times", 8, QFont.Bold))
-
-        self.name_book_label = QLabel('Название книги:', self)
-        self.name_book_label.move(400, 250)
-        self.name_book_label.setFont(QFont("Times", 8, QFont.Bold))
-        self.name_book_entry = QLineEdit(self, placeholderText='title')
-        self.name_book_entry.move(500, 250)
-
-        self.name_user_label = QLabel('Имя читателя:', self)
-        self.name_user_label.move(400, 300)
-        self.name_user_label.setFont(QFont("Times", 8, QFont.Bold))
-        self.name_user_entry = QLineEdit(self, placeholderText='users(name)')
-        self.name_user_entry.move(500, 300)
 
     # функция для добавления книги в базу данных
     def add_book(self):
@@ -155,6 +142,79 @@ class LibraryApp(QMainWindow):
         # выводим список книг в текстовый виджет
         for book in books:
             self.output.append(f'{book[0]}.  {book[1]}, {book[2]}, {book[3]}, {book[4]}, {book[5]}')
+
+
+    def closeEvent(self, event):
+        # закрываем соединение с базой данных при закрытии приложения
+        self.conn.close()
+
+#class UsersApp(QMainWindow):
+
+class IssueApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # создаем соединение с нашей базой данных
+        self.conn = sqlite3.connect('library.db')
+        self.cur = self.conn.cursor()
+
+        self.conn.commit()
+
+        # создаем графический интерфейс
+        self.setWindowTitle('Выдача/возврат книг')
+        self.setGeometry(50, 50, 500, 500)
+
+        # кнопка выдачи книг
+        self.issue_button = QPushButton('Выдать книгу', self)
+        self.issue_button.move(20, 100)
+        self.issue_button.setStyleSheet("""
+        QPushButton{
+            font-style: oblique;
+            font-weight: bold;
+            border: 1px solid #1DA1F2;
+            border-radius: 15px;
+            color: #1DA1F2;
+            background-color: #fff;
+        }
+        """)
+        self.issue_button.clicked.connect(self.issue_book)
+
+        # кнопка возврата книги
+        self.return_button = QPushButton('Вернуть книгу', self)
+        self.return_button.setStyleSheet("""
+                QPushButton{
+                    font-style: oblique;
+                    font-weight: bold;
+                    border: 1px solid #1DA1F2;
+                    border-radius: 15px;
+                    color: #1DA1F2;
+                    background-color: #fff;
+                }
+                """)
+        self.return_button.move(150, 100)
+        self.return_button.clicked.connect(self.return_book)
+
+        # создаем текстовый виджет
+        self.output = QTextEdit(self)
+        self.output.setGeometry(20, 220, 360, 100)
+
+        # загаловок
+        # self.label = QLabel('Выдача и возврат книг', self)
+        # self.label.setGeometry(400, 220, 150, 30)
+        # self.label.move(400, 220)
+        # self.label.setFont(QFont("Times", 8, QFont.Bold))
+
+        self.name_book_label = QLabel('Название книги:', self)
+        self.name_book_label.move(20, 20)
+        self.name_book_label.setFont(QFont("Times", 8, QFont.Bold))
+        self.name_book_entry = QLineEdit(self, placeholderText='title')
+        self.name_book_entry.move(150, 20)
+
+        self.name_user_label = QLabel('Имя читателя:', self)
+        self.name_user_label.move(20, 60)
+        self.name_user_label.setFont(QFont("Times", 8, QFont.Bold))
+        self.name_user_entry = QLineEdit(self, placeholderText='users(name)')
+        self.name_user_entry.move(150, 60)
 
     # функция выдачи книг
     def issue_book(self):
@@ -198,11 +258,12 @@ class LibraryApp(QMainWindow):
         # закрываем соединение с базой данных при закрытии приложения
         self.conn.close()
 
-
 if __name__ == '__main__':
     app = QApplication(
         sys.argv)  # создаем экзэмпляр класса. аргументы sys.argv используются для инициализации QApplication
-    library_app = LibraryApp()  # создаем обьект класс
-    library_app.show()  # выводим его на экран
+    # library_app = LibraryApp()  # создаем обьект класс
+    # library_app.show()  # выводим его на экран
+    main_window = MainWindow()
+    main_window.show()
     sys.exit(app.exec_())  # sys.exit() гарантирует, что приложение завершится
     # корректно при завершении цикла обработки событий(app.exec_()).
