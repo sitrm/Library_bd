@@ -70,7 +70,11 @@ class IssueWin(QMainWindow):
         name_book = self.name_book_entry.text()
         name_user = self.name_user_entry.text()
         # проверка на сущетсвование пользователя в БД
-        if self.cur.execute("""SELECT name FROM users""").fetchall()[0] != name_user:
+        flag = False
+        for cur_name_user in self.cur.execute("""SELECT name FROM users""").fetchall():#проходимся циклом по всем пользователям и проверяем
+            if cur_name_user[0] == name_user:
+                flag = True
+        if not flag:
             self.output.clear()
             self.output.append(f"Данного пользователя не существует в базе данных! Добавьте пользователя в базу данных,\
             чтобы выдать книгу!")
