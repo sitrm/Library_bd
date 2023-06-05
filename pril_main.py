@@ -1,10 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QVBoxLayout
 from books import BooksWin
-from issue import IssueWin
 from users import UsersWin
-from PyQt6.QtGui import QFont
 import sqlite3
+from datetime import date
 
 
 # TODO: разбить на файлы классы, посмотреть проверку при выдачи. фоны
@@ -20,15 +19,11 @@ class MainWindow(QMainWindow):
 
         self.conn.commit()
         self.setWindowTitle('Меню')
-        self.setGeometry(100, 100, 500, 700)
+        self.setGeometry(100, 50, 500, 700)
 
-        layout = QVBoxLayout()
+
         # -----------------------------------------кнопки----------------------------------------------
-        # btn_books = QPushButton('Книги', self)
-        # btn_books.move(0,0)
-        # btn_books.clicked.connect(self.openBooksWindow)
-        # btn_users = QPushButton('Пользователи', self)
-        # btn_users.clicked.connect(self.openUsersWindow)
+
         self.btn_books = QPushButton('КНИГИ', self)  # немного передалал кнопки - убрал layout. пока что так
         self.btn_books.setGeometry(10, 20, 235, 200)  # TODO: автоматическая настройка геометрии???
         self.btn_books.clicked.connect(self.openBooksWindow)
@@ -51,14 +46,6 @@ class MainWindow(QMainWindow):
                 }
                 """)
 
-        # layout.addWidget(btn_books)
-        # layout.addWidget(btn_users)
-        #
-        #
-        # widget = QWidget()
-        # widget.setLayout(layout)
-        # self.setCentralWidget(widget)
-
         # кнопка возврата книги
         self.return_button = QPushButton('Вернуть книгу', self)
         self.return_button.setStyleSheet("""
@@ -77,7 +64,7 @@ class MainWindow(QMainWindow):
         # -------------------------------------------------виджеты----------------------------------------------
         # создаем текстовый виджет
         self.output = QTextEdit(self)
-        self.output.setGeometry(25, 400, 450, 275)
+        self.output.setGeometry(25, 400, 400, 275)
 
         self.title = QLabel('ВЫДАЧА И ПРИЁМ КНИГ:', self)
         self.title.setGeometry(30, 235, 450, 12)
