@@ -27,11 +27,12 @@ class MainWindow(QMainWindow):
         self.btn_books = QPushButton('КНИГИ', self)  # немного передалал кнопки - убрал layout. пока что так
         self.btn_books.setGeometry(10, 20, 235, 200)  # TODO: автоматическая настройка геометрии???
         self.btn_books.clicked.connect(self.openBooksWindow)
+        self.btn_books.setStyleSheet("QPushButton:hover{border-image: url(lib1.png)}")
 
         self.btn_users = QPushButton('ЧИТАТЕЛИ', self)
         self.btn_users.setGeometry(255, 20, 235, 200)
         self.btn_users.clicked.connect(self.openUsersWindow)
-
+        self.btn_users.setStyleSheet("QPushButton:hover{border-image: url(users.png)}")
         # кнопка выдачи книг
         self.issue_button = QPushButton('Выдать книгу', self)
         self.issue_button.move(20, 350)
@@ -141,6 +142,7 @@ if __name__ == '__main__':
         sys.argv)  # создаем экзэмпляр класса. аргументы sys.argv используются для инициализации QApplication
 
     main_window = MainWindow()
+    #main_window.setStyleSheet("QLineEdit { background-color: yellow }")
     main_window.show()
     sys.exit(app.exec())  # sys.exit() гарантирует, что приложение завершится
     # корректно при завершении цикла обработки событий(app.exec_()).

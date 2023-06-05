@@ -28,7 +28,6 @@ class BooksWin(QMainWindow):
             }
         """)
 
-
         # создаем соединение с нашей базой данных
         self.conn = sqlite3.connect('library.db')
         self.cur = self.conn.cursor()
