@@ -15,7 +15,7 @@ class BooksWin(QMainWindow):
 
         # создаем графический интерфейс
         self.setWindowTitle('Библиотека')
-        self.setGeometry(50, 50, 500, 500)
+        self.setGeometry(100, 100, 500, 500)
 
         # создаем виджеты для ввода данных
         self.title_label = QLabel('Название книги:', self)
