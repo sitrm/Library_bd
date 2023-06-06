@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
 from PyQt6.QtGui import QPalette, QPixmap
 from PyQt5.QtCore import Qt
@@ -38,6 +38,19 @@ class BooksWin(QMainWindow):
         self.setWindowTitle('Библиотека')
 
         self.setGeometry(100, 100, 500, 500)
+        self.title_sort = QLabel("Сортировать:", self)
+        self.title_sort.move(300, 20)
+        self.checkbox_asc_book = QCheckBox("по алфавиту книг", self)
+        self.checkbox_asc_book.setGeometry(300, 50, 150, 20)
+        self.checkbox_asc_book.setChecked(False)
+
+        self.checkbox_asc_author = QCheckBox('по алфавиту авторов', self)
+        self.checkbox_asc_author.setGeometry(300, 70, 150, 20)
+        self.checkbox_asc_author.setChecked(False)
+
+        self.checkbox_desc_year = QCheckBox('по убыванию года издания', self)
+        self.checkbox_desc_year.setGeometry(300, 90, 180, 20)
+        self.checkbox_desc_year.setChecked(False)
 
         # создаем виджеты для ввода данных
         self.title_label = QLabel('Название книги:', self)
@@ -121,10 +134,20 @@ class BooksWin(QMainWindow):
 
     # функция для вывода списка книг из базы данных
     def show_books(self):
-        # получаем все книги из базы данных
-        self.cur.execute('SELECT * FROM books')
-        books = self.cur.fetchall()
-        # print(books)
+        if self.checkbox_asc_book.isChecked():
+            self.cur.execute('SELECT * FROM books ORDER BY title ASC')
+            books = self.cur.fetchall()
+        elif self.checkbox_asc_author.isChecked():
+            self.cur.execute('SELECT * FROM books ORDER BY author ASC')
+            books = self.cur.fetchall()
+        elif self.checkbox_desc_year.isChecked():
+            self.cur.execute('SELECT * FROM books ORDER BY year DESC')
+            books = self.cur.fetchall()
+        else:
+            # получаем все книги из базы данных
+            self.cur.execute('SELECT * FROM books')
+            books = self.cur.fetchall()
+
         # очищаем текстовый виджет
         self.output.clear()
         # выводим список книг в текстовый виджет
