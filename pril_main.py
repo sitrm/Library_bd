@@ -7,6 +7,7 @@ from datetime import date
 
 
 # TODO: проверка при выдаче и возврате, пустые, ВЫПАДАЮЩИЙ список
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -63,6 +64,21 @@ class MainWindow(QMainWindow):
         self.return_button.move(150, 350)
         self.return_button.clicked.connect(self.return_book)
 
+        self.output_book_button = QPushButton('Выданные книги', self)
+        self.output_book_button.setStyleSheet("""
+                   QPushButton{
+                       font-style: oblique;
+                       font-weight: bold;
+                       border: 1px solid #1DA1F2;
+                       border-radius: 15px;
+                       color: #1DA1F2;
+                       background-color: #fff;
+                   }
+                   """)
+        self.output_book_button.setGeometry(265, 350, 120, 30)
+        self.output_book_button.clicked.connect(self.output_book)
+
+
         # -------------------------------------------------виджеты----------------------------------------------
         # создаем текстовый виджет
         self.output = QTextEdit(self)
@@ -118,6 +134,8 @@ class MainWindow(QMainWindow):
             self.conn.commit()
             self.output.clear()
             self.output.append(f'Книга успешно выдана')
+            self.name_book_entry.setText('')
+            self.name_user_entry.setText('')
 
     def return_book(self):
         name_book = self.name_book_entry.text()
@@ -132,6 +150,18 @@ class MainWindow(QMainWindow):
         self.conn.commit()
         self.output.clear()
         self.output.append(f'Книга {name_book} успешно возвращена!')
+        self.name_book_entry.setText('')
+        self.name_user_entry.setText('')
+
+    def output_book(self):
+        self.cur.execute("SELECT * FROM issue_log")
+        books = self.cur.fetchall()
+        if books is None:
+            self.output.clear()
+            self.output.append(f"Все книги возвращены")
+        for cur_book in books:
+            self.output.append(f'id читателя-{cur_book[0]}, {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')
+
 
     def closeEvent(self, event):
         # закрываем соединение с базой данных при закрытии приложения

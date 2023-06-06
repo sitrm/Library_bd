@@ -160,13 +160,15 @@ class UsersWin(QMainWindow):
     # функция для вывода списка читателей из базы данных
     def show_readers(self):
         # получаем всех читателей из базы данных
-        self.cur.execute('SELECT * FROM users')
+        self.cur.execute('SELECT * FROM users ORDER BY name ASC')
         readers = self.cur.fetchall()
         # очищаем текстовый виджет
         self.output.clear()
         # выводим список книг в текстовый виджет
+        i = 1
         for r in readers:
-            self.output.append(f'{r[0]}.  {r[1]}, ранг {r[2]}, {r[3]};')
+            self.output.append(f'{i}) id - {r[0]}.  {r[1]}, ранг {r[2]}, {r[3]};')
+            i += 1
 
     #удалить пользователя
     def delete_user(self):
@@ -187,7 +189,6 @@ class UsersWin(QMainWindow):
             self.cur.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
             self.conn.commit()
             self.delete_entry.setText('')
-            self.cur.execute('SELECT name FROM users WHERE user_id = ?', (user_id,))
             self.output.clear()
             self.output.append(f"Пользователь {name_user} успешно удален!")
 

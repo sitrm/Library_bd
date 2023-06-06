@@ -77,7 +77,7 @@ class BooksWin(QMainWindow):
         self.year_entry = QLineEdit(self, placeholderText='year')
         self.year_entry.move(150, 140)
 
-        # создаем кнопки для добавления и вывода книг
+        # создаем кнопки для добавления/удаления и вывода книг
         self.add_button = QPushButton('Добавить книгу', self)
         self.add_button.setGeometry(20, 180, 120, 30)
         self.add_button.setStyleSheet('background: rgb(255,0,0);')
