@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QComboBox,QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QVBoxLayout
 from books import BooksWin
 from users import UsersWin
 import sqlite3
@@ -18,7 +18,8 @@ class MainWindow(QMainWindow):
         self.cur = self.conn.cursor()
 
         self.conn.commit()
-        self.setWindowTitle('Меню')
+
+        self.setWindowTitle('БИБЛИОТЕКА')
         self.setGeometry(100, 50, 500, 700)
 
 
@@ -73,8 +74,17 @@ class MainWindow(QMainWindow):
 
         self.name_book_label = QLabel('Название книги:', self)
         self.name_book_label.move(20, 260)
-        self.name_book_entry = QLineEdit(self, placeholderText='title')
-        self.name_book_entry.move(150, 260)
+        # self.name_book_entry = QLineEdit(self, placeholderText='title')
+        # self.name_book_entry.move(150, 260)
+
+        #TODO: связать с кнопкой выдать
+        self.name_book_entry = QComboBox(self)
+        self.name_book_entry.setGeometry(150,260,200,30)
+        # создаём список книг, преобразуя кортедж из поиска в список
+        self.item = [title[0] for title in self.cur.execute("""SELECT title FROM books""").fetchall()]
+        self.name_book_entry.addItems(self.item)
+
+
 
         self.name_user_label = QLabel('Имя читателя:', self)
         self.name_user_label.move(20, 300)
@@ -82,6 +92,7 @@ class MainWindow(QMainWindow):
         self.name_user_entry = QLineEdit(self, placeholderText='users(name)')
         self.name_user_entry.move(150, 300)
 
+        self.show()
     def openBooksWindow(self):
         self.books_window = BooksWin()
         self.books_window.show()
@@ -92,7 +103,7 @@ class MainWindow(QMainWindow):
 
     # функция выдачи книг
     def issue_book(self):
-        name_book = self.name_book_entry.text()
+        name_book = self.name_book_entry.currentText()
         name_user = self.name_user_entry.text()
         # проверка на сущетсвование пользователя в БД
         flag = False
@@ -120,7 +131,7 @@ class MainWindow(QMainWindow):
             self.output.append(f'Книга успешно выдана')
 
     def return_book(self):
-        name_book = self.name_book_entry.text()
+        name_book = self.name_book_entry.currentText()
         self.cur.execute('''SELECT * FROM issue_log WHERE name_book = ?''', (name_book,))
         issue = self.cur.fetchone()
         if issue is None:
