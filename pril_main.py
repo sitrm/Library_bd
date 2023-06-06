@@ -6,7 +6,7 @@ import sqlite3
 from datetime import date
 
 
-# TODO: разбить на файлы классы, посмотреть проверку при выдачи. фоны
+# TODO: проверка при выдаче и возврате, пустые, ВЫПАДАЮЩИЙ список
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
                     background-color: #fff;
                 }
                 """)
+        self.issue_button.clicked.connect(self.issue_book)
 
         # кнопка возврата книги
         self.return_button = QPushButton('Вернуть книгу', self)
@@ -110,7 +111,7 @@ class MainWindow(QMainWindow):
             # проверка сущетсвования книги в БД
             if self.cur.rowcount == 0:
                 self.output.clear()
-                self.output.append(f'Этой книги к сожаление нет в библиотеки! Возьмите другую')
+                self.output.append(f'Этой книги нет в библиотеке! Возьмите другую')
                 return
             self.cur.execute('''INSERT INTO issue_log (name_user, name_book, data) 
                              VALUES (?, ?, ?)''', (name_user, name_book, date.today()))
