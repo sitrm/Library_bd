@@ -6,6 +6,25 @@ class UsersWin(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #333333;
+                color: #ffffff;
+            }
+            QPushButton {
+                background-color: #555555;
+                color: #ffffff;
+                border: none;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #666666;
+            }
+            QLineEdit {
+                background-color: #444444;
+                color: #ffffff;
+            }
+        """)
 
         # создаем соединение с нашей базой данных
         self.conn = sqlite3.connect('library.db')
@@ -24,9 +43,9 @@ class UsersWin(QMainWindow):
         self.name_entry.move(150, 100)
 
 
-        self.rang_label = QLabel('Ранг:', self)  # TODO: auto rang
+        self.rang_label = QLabel('Ранг читателя:', self)  # TODO: auto rang
         self.rang_label.move(20, 140)
-        self.rang_entry = QLineEdit(self, placeholderText='rang')
+        self.rang_entry = QLineEdit(self, placeholderText='rank')
         self.rang_entry.move(150, 140)
 
         self.phone_label = QLabel('Номер телефона:', self)  # TODO: auto rang
@@ -49,12 +68,12 @@ class UsersWin(QMainWindow):
         }
         """)
         self.delete_entry = QLineEdit(self, placeholderText='id читателя')
-        self.delete_entry.move(550, 100)
+        self.delete_entry.move(550, 110)
         self.delete_button.clicked.connect(self.delete_user)
 
         # -------------------------------------------кнопки------------------------------------------------
         self.add_button = QPushButton('Добавить читателя', self)
-        self.add_button.setGeometry(20, 240, 150, 30)
+        self.add_button.setGeometry(20, 240, 170, 30)
         self.add_button.setStyleSheet('background: rgb(255,0,0);')
         self.add_button.setStyleSheet("""
         QPushButton{
@@ -107,11 +126,32 @@ class UsersWin(QMainWindow):
         name = self.name_entry.text()
         rang = self.rang_entry.text()
         phone = self.phone_entry.text()
+        #--------------ПРОВЕРКИ----------------
+        if any(map(str.isdigit, name)):
+            self.output.clear()
+            return self.output.append(f'Имя пользоватлея введено не корректно! Оно должно содержать только буквы!')
+        if not rang.isnumeric():
+            self.output.clear()
+            return self.output.append(f'Ранг введен не корректно! Введите целое число!')
+        if not phone.isnumeric():
+            self.output.clear()
+            return self.output.append(f'Телефон пользоватлея введен не корректно! Номер телефона должен содержать только числа!')
+
+        if name == '':
+            self.output.clear()
+            return self.output.append(f'Введите имя читателя!')
+        if rang == '':
+            self.output.clear()
+            return self.output.append(f'Введите ранг читателя!')
+        if phone == '':
+            self.output.clear()
+            return self.output.append(f'Введите телефон читателя!')
+
         # добавляем книгу в базу данных
         self.cur.execute('INSERT OR REPLACE INTO users (name, rang, phone) VALUES (?, ?, ?)',
                          (name, rang, phone))
         self.conn.commit()
-        # очищаем поля ввода!!!!!
+        # очищаем поля ввода!!!
         self.name_entry.setText('')
         self.rang_entry.setText('')
         self.phone_entry.setText('')
@@ -126,24 +166,36 @@ class UsersWin(QMainWindow):
         self.output.clear()
         # выводим список книг в текстовый виджет
         for r in readers:
-            self.output.append(f'{r[0]}.  {r[1]}, {r[2]}, {r[3]};')
+            self.output.append(f'{r[0]}.  {r[1]}, ранг {r[2]}, {r[3]};')
 
     #удалить пользователя
     def delete_user(self):
         user_id = self.delete_entry.text()
-        name_user = self.cur.execute('SELECT name FROM users WHERE user_id = ?', (user_id,)).fetchall()[0][0]
-        self.cur.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
-        self.conn.commit()
-        self.delete_entry.setText('')
-        self.cur.execute('SELECT name FROM users WHERE user_id = ?', (user_id,))
-        self.output.clear()
-        self.output.append(f"Пользователь {name_user} успешно удален!")
+        if not user_id.isnumeric():
+            self.output.clear()
+            return self.output.append(f'ID пользователя введено не корректно! Введите целое число!')
+
+        flag = False
+        for cur_user_id in self.cur.execute('SELECT user_id FROM users').fetchall():
+            if str(cur_user_id[0]) == user_id:#str бл!!!!!
+                flag = True
+        if not flag:
+            self.output.clear()
+            return self.output.append(f"Пользователя с id - {user_id} не сущетсвует!")
+        else:
+            name_user = self.cur.execute('SELECT name FROM users WHERE user_id = ?', (user_id,)).fetchall()[0][0]
+            self.cur.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+            self.conn.commit()
+            self.delete_entry.setText('')
+            self.cur.execute('SELECT name FROM users WHERE user_id = ?', (user_id,))
+            self.output.clear()
+            self.output.append(f"Пользователь {name_user} успешно удален!")
 
     def sort_user_rang(self):
         sort_user = self.cur.execute("SELECT * FROM users ORDER BY rang DESC")
         self.output.clear()
         for cur_sort_user in sort_user:
-            self.output.append(f"{cur_sort_user[0]}. {cur_sort_user[1]}, {cur_sort_user[2]}, {cur_sort_user[3]}")
+            self.output.append(f"{cur_sort_user[0]}. {cur_sort_user[1]}, ранг {cur_sort_user[2]}, {cur_sort_user[3]};")
 
 
     def closeEvent(self, event):
