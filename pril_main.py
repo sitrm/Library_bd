@@ -180,9 +180,14 @@ class MainWindow(QMainWindow):
             self.output.append(f"Все книги возвращены")
         for cur_book in books:
             self.output.append(f'id читателя-{cur_book[0]}, {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: неправильно выводятся индексы!!!
+<<<<<<< HEAD
                                                                                                         #todo: id продолжают увеличиваться, даже если возвращаешь книгу
         self.name_book_entry.setCurrentIndex(-1)  # очищение поля                                    #todo: может вообще убрать эти id в базе данных выдачи
                                                                                                 #todo: они функционала никакого не имеют
+=======
+
+        self.name_book_entry.setCurrentIndex(-1)  # очищение поля
+>>>>>>> 2a0bb05877c6b50bcc3aedc62478f900b733101a
         self.name_user_entry.setCurrentIndex(-1)
 
     def closeEvent(self, event):
