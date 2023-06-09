@@ -1,8 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
-from PyQt6.QtGui import QPalette, QPixmap
-from PyQt5.QtCore import Qt
+
+#TODO: ДОБАВИТЬ ПРИ ВЫВОДЕ КНИГ СОРТИРОВКУ "В НАЛИЧИИ" - сделал
+#TODO: подумать по поводу нескольких галочек сразу в сортировке
 
 class BooksWin(QMainWindow):
 
@@ -40,6 +41,11 @@ class BooksWin(QMainWindow):
         self.setGeometry(100, 100, 700, 500)
         self.title_sort = QLabel("Сортировать:", self)
         self.title_sort.move(300, 20)
+
+        self.checkbox_issue = QCheckBox('В наличии', self)
+        self.checkbox_issue.setGeometry(300, 110, 150, 20)
+        self.checkbox_issue.setChecked(False)
+
         self.checkbox_asc_book = QCheckBox("по алфавиту книг", self)
         self.checkbox_asc_book.setGeometry(300, 50, 150, 20)
         self.checkbox_asc_book.setChecked(False)
@@ -155,6 +161,9 @@ class BooksWin(QMainWindow):
             books = self.cur.fetchall()
         elif self.checkbox_desc_year.isChecked():
             self.cur.execute('SELECT * FROM books ORDER BY year DESC')
+            books = self.cur.fetchall()
+        elif self.checkbox_issue.isChecked():
+            self.cur.execute("SELECT * FROM books WHERE available = 1")
             books = self.cur.fetchall()
         else:
             # получаем все книги из базы данных
