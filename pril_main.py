@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self.name_book_label.move(20, 260)
 
         self.name_book_entry = QComboBox(self)
-        self.name_book_entry.setGeometry(150,260,200,30)
+        self.name_book_entry.setGeometry(150, 260, 200, 30)
         # создаём список книг, преобразуя кортедж из поиска в список
         self.item_book = [title[0] for title in self.cur.execute("""SELECT title FROM books""").fetchall()]
         self.name_book_entry.addItems(self.item_book)
@@ -105,9 +105,14 @@ class MainWindow(QMainWindow):
         self.name_user_label.move(20, 300)
 
         self.name_user_entry = QComboBox(self,)
-        self.name_user_entry.setGeometry(150, 300,200,30)
-        self.item_user = [name[0] for name in self.cur.execute("""SELECT name FROM users""").fetchall()]
-        self.name_user_entry.addItems(self.item_user)
+        self.name_user_entry.setGeometry(150, 300, 200, 30)
+        self.item_user_id = [cur_id[0] for cur_id in self.cur.execute("""SELECT user_id FROM users""").fetchall()]
+        self.item_user_name = [self.cur.execute("SELECT name FROM users WHERE user_id = ?", (cur_id[0],)).fetchall()[0][0] for
+                          cur_id in self.cur.execute("""SELECT user_id FROM users""").fetchall()]
+        self.arr_id_name = []
+        for id_, name in zip(list(map(str, self.item_user_id)), self.item_user_name):
+            self.arr_id_name.append(f'id-{id_}, {name}')
+        self.name_user_entry.addItems(self.arr_id_name)
         self.name_user_entry.setCurrentIndex(-1)
 
         self.show()
@@ -122,35 +127,23 @@ class MainWindow(QMainWindow):
     # функция выдачи книг
     def issue_book(self):
         name_book = self.name_book_entry.currentText() #todo: если будет время - сделать, чтобы выданные книги исчезали из выпадающего списка. ну ил пофииг
-        name_user = self.name_user_entry.currentText()
-        # проверка на сущетсвование пользователя в БД
-        flag = False
-        for cur_name_user in self.cur.execute(
-                """SELECT name FROM users""").fetchall():  # проходимся циклом по всем пользователям и проверяем
-            if cur_name_user[0] == name_user:
-                flag = True
-        if not flag:
+        user_id = self.name_user_entry.currentText()
+
+        self.cur.execute('''UPDATE books SET available = 0 WHERE title = ? AND available = 1''', (name_book,))
+        # проверка сущетсвования книги в БД
+        if self.cur.rowcount == 0:
             self.output.clear()
-            self.output.append(f"Данного пользователя не существует в базе данных! Добавьте пользователя в базу данных, чтобы выдать книгу!")
-            return
-        else:
-            self.cur.execute('''UPDATE books SET available = 0 
-            
-                     WHERE title = ? AND available = 1''', (name_book,))
-            # проверка сущетсвования книги в БД
-            if self.cur.rowcount == 0:
-                self.output.clear()
-                self.output.append(f'Этой книги нет в библиотеке! Возьмите другую.')
-                self.name_book_entry.setCurrentIndex(-1)
-                self.name_user_entry.setCurrentIndex(-1)
-                return
-            self.cur.execute('''INSERT INTO issue_log (name_user, name_book, data) 
-                             VALUES (?, ?, ?)''', (name_user, name_book, date.today()))
-            self.conn.commit()
-            self.output.clear()
-            self.output.append(f'Книга успешно выдана')
-            self.name_book_entry.setCurrentIndex(-1) #очищение поля
+            self.output.append(f'Этой книги нет в библиотеке! Возьмите другую.')
+            self.name_book_entry.setCurrentIndex(-1)
             self.name_user_entry.setCurrentIndex(-1)
+            return
+        name_user = self.cur.execute("SELECT name FROM users WHERE user_id = ?", (int(user_id),)).fetchall()
+        self.cur.execute('''INSERT INTO issue_log (user_id, name_user, name_book, data) VALUES (?, ?, ?, ?)''', (user_id, name_user[0][0], name_book, date.today()))
+        self.conn.commit()
+        self.output.clear()
+        self.output.append(f'Книга {name_book} успешно выдана!')
+        self.name_book_entry.setCurrentIndex(-1) #очищение поля
+        self.name_user_entry.setCurrentIndex(-1)
 
 
     def return_book(self):
@@ -174,20 +167,17 @@ class MainWindow(QMainWindow):
 
     def output_book(self):
         self.output.clear()  #чистим логи
-        self.cur.execute("SELECT * FROM issue_log")
-        books = self.cur.fetchall()
-        if books is None:  #TODO: даже если все книги возвращены - всё равно не выводит эту надпись
+        check = self.cur.execute("SELECT COUNT(*) FROM issue_log").fetchall()[0][0]
+        if check == 0:
             self.output.clear()
-            self.output.append(f"Все книги возвращены")
+            return self.output.append(f"Все книги возвращены!")
+        books = self.cur.execute("SELECT * FROM issue_log").fetchall()
         i = 1
         for cur_book in books:
-            self.output.append(f'{i}) {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: пока убрал индексы (cur_book[0])
-            i+=1                                                   #todo:раз они выводятся неправильно, надо в самой базе данных чекнуть чё за х
+            self.output.append(f'{i}) {cur_book[2]} id - {cur_book[1]}, {cur_book[3]}, {cur_book[4]}')
+            i += 1
 
         self.name_book_entry.setCurrentIndex(-1)  # очищение поля
-
-
-
         self.name_user_entry.setCurrentIndex(-1)
 
     def closeEvent(self, event):
