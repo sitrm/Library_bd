@@ -2,8 +2,8 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
 
-#TODO: ДОБАВИТЬ ПРИ ВЫВОДЕ КНИГ СОРТИРОВКУ "В НАЛИЧИИ" - сделал
-#TODO: подумать по поводу нескольких галочек сразу в сортировке
+#TODO: сортировать по фамилии автора, а не по имени
+#TODO: подумать по поводу нескольких галочек сразу в сортировке - DONE!
 
 class BooksWin(QMainWindow):
 
@@ -41,7 +41,7 @@ class BooksWin(QMainWindow):
         self.setGeometry(100, 100, 700, 500)
         self.title_sort = QLabel("Сортировать:", self)
         self.title_sort.move(300, 20)
-
+#----------------------------------------------------------------chexboxes-----------------------------------------------
         self.checkbox_issue = QCheckBox('В наличии', self)
         self.checkbox_issue.setGeometry(300, 110, 150, 20)
         self.checkbox_issue.setChecked(False)
@@ -58,6 +58,13 @@ class BooksWin(QMainWindow):
         self.checkbox_desc_year.setGeometry(300, 90, 180, 20)
         self.checkbox_desc_year.setChecked(False)
 
+        # Соединяем сигналы от checkbox с функцией-обработчиком  #TODO: сделал взаимоисключающие сигналы
+        self.checkbox_issue.stateChanged.connect(lambda state: self.checkboxStateChanged1(state))
+        self.checkbox_asc_author.stateChanged.connect(lambda state: self.checkboxStateChanged2(state))
+        self.checkbox_asc_book.stateChanged.connect(lambda state: self.checkboxStateChanged3(state))
+        self.checkbox_desc_year.stateChanged.connect(lambda state: self.checkboxStateChanged4(state))
+
+#-----------------------------------------------------------------------------widgets---------------------------------------------------
         # создаем виджеты для ввода данных
         self.title_label = QLabel('Название книги:', self)
         self.title_label.move(20, 20)
@@ -82,7 +89,7 @@ class BooksWin(QMainWindow):
 
         self.year_entry = QLineEdit(self, placeholderText='year')
         self.year_entry.move(150, 140)
-
+#----------------------------------------------------------------------------buttons--------------------------------------------
         # создаем кнопки для добавления/удаления и вывода книг
         self.add_button = QPushButton('Добавить книгу', self)
         self.add_button.setGeometry(20, 180, 120, 30)
@@ -133,6 +140,7 @@ class BooksWin(QMainWindow):
         self.output = QTextEdit(self)
         self.output.setGeometry(20, 220, 420, 250)
 
+#-----------------------------------------------------------------------------functions-----------------------------------------------------------
 
     # функция для добавления книги в базу данных
     def add_book(self):
@@ -179,7 +187,7 @@ class BooksWin(QMainWindow):
                 issue = 'в наличии'
             else:
                 issue = 'выдана'
-            self.output.append(f'{i}) id-{book[0]}.  {book[1]}, {book[2]}, {book[3]}, {book[4]}, {issue}')
+            self.output.append(f'{i}) {book[1]}, {book[2]}, {book[3]}, {book[4]}, id-{book[0]}. {issue}')
             i += 1
 
     def delete_book(self):
@@ -202,6 +210,33 @@ class BooksWin(QMainWindow):
             self.delete_entry.setText('')
             self.output.clear()
             self.output.append(f"Книга {name_book} успешно удален!")
+
+    # self.checkbox_issue.stateChanged.connect(lambda state: self.checkboxStateChanged1(state))
+    # self.checkbox_asc_author.stateChanged.connect(lambda state: self.checkboxStateChanged2(state))
+    # self.checkbox_asc_book.stateChanged.connect(lambda state: self.checkboxStateChanged3(state))
+    # self.checkbox_desc_year.stateChanged.connect(lambda state: self.checkboxStateChanged4(state))
+    def checkboxStateChanged1(self,state):
+        if state == 2:
+            self.checkbox_asc_author.setChecked(False)
+            self.checkbox_asc_book.setChecked(False)
+            self.checkbox_desc_year.setChecked(False)
+    def checkboxStateChanged2(self, state):
+        if state == 2:
+            self.checkbox_issue.setChecked(False)
+            self.checkbox_asc_book.setChecked(False)
+            self.checkbox_desc_year.setChecked(False)
+
+    def checkboxStateChanged3(self, state):
+        if state == 2:
+            self.checkbox_issue.setChecked(False)
+            self.checkbox_asc_author.setChecked(False)
+            self.checkbox_desc_year.setChecked(False)
+
+    def checkboxStateChanged4(self, state):
+        if state == 2:
+            self.checkbox_issue.setChecked(False)
+            self.checkbox_asc_author.setChecked(False)
+            self.checkbox_asc_book.setChecked(False)
 
     def closeEvent(self, event):
         # закрываем соединение с базой данных при закрытии приложения

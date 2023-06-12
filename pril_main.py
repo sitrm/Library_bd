@@ -135,6 +135,7 @@ class MainWindow(QMainWindow):
             return
         else:
             self.cur.execute('''UPDATE books SET available = 0 
+            
                      WHERE title = ? AND available = 1''', (name_book,))
             # проверка сущетсвования книги в БД
             if self.cur.rowcount == 0:
