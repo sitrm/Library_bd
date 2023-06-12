@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
 
     # функция выдачи книг
     def issue_book(self):
-        name_book = self.name_book_entry.currentText()
+        name_book = self.name_book_entry.currentText() #todo: если будет время - сделать, чтобы выданные книги исчезали из выпадающего списка. ну ил пофииг
         name_user = self.name_user_entry.currentText()
         # проверка на сущетсвование пользователя в БД
         flag = False
@@ -131,8 +131,7 @@ class MainWindow(QMainWindow):
                 flag = True
         if not flag:
             self.output.clear()
-            self.output.append(f"Данного пользователя не существует в базе данных! Добавьте пользователя в базу данных,\
-            чтобы выдать книгу!")
+            self.output.append(f"Данного пользователя не существует в базе данных! Добавьте пользователя в базу данных, чтобы выдать книгу!")
             return
         else:
             self.cur.execute('''UPDATE books SET available = 0 
@@ -173,21 +172,20 @@ class MainWindow(QMainWindow):
 
 
     def output_book(self):
+        self.output.clear()  #чистим логи
         self.cur.execute("SELECT * FROM issue_log")
         books = self.cur.fetchall()
         if books is None:  #TODO: даже если все книги возвращены - всё равно не выводит эту надпись
             self.output.clear()
             self.output.append(f"Все книги возвращены")
         for cur_book in books:
-            self.output.append(f'id читателя-{cur_book[0]}, {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: неправильно выводятся индексы!!!
-<<<<<<< HEAD
-                                                                                                        #todo: id продолжают увеличиваться, даже если возвращаешь книгу
-        self.name_book_entry.setCurrentIndex(-1)  # очищение поля                                    #todo: может вообще убрать эти id в базе данных выдачи
-                                                                                                #todo: они функционала никакого не имеют
-=======
+            self.output.append(f' {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: пока убрал индексы (cur_book[0])
+                                                                                #todo:раз они выводятся неправильно, надо в самой базе данных чекнуть чё за х
 
         self.name_book_entry.setCurrentIndex(-1)  # очищение поля
->>>>>>> 2a0bb05877c6b50bcc3aedc62478f900b733101a
+
+
+
         self.name_user_entry.setCurrentIndex(-1)
 
     def closeEvent(self, event):
