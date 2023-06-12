@@ -5,7 +5,9 @@ from users import UsersWin
 import sqlite3
 from datetime import date
 
-#TODO: некоторые добавленные книги нельзя выдать, их как бы не существует
+#TODO: А КУДА делись сортировки читателей?
+#todo: сломал выдачу книг, добавив людей с одинаковыми фио
+#todo:при добавлении второго Дайтова вылетела прога
 # TODO: ПРОБЛЕМЫ с ID при выдаче!!!! отсортировать выпадающие списки по алфавиту. А если убирать выданные книги из списка?
 
 class MainWindow(QMainWindow):
@@ -116,6 +118,8 @@ class MainWindow(QMainWindow):
         self.name_user_entry.setCurrentIndex(-1)
 
         self.show()
+
+#-----------------------------------------------------------функции----------------------------------------------------------------------------
     def openBooksWindow(self):
         self.books_window = BooksWin()
         self.books_window.show()
@@ -125,9 +129,10 @@ class MainWindow(QMainWindow):
         self.users_window.show()
 
     # функция выдачи книг
-    def issue_book(self):
+    def issue_book(self):   #todo: НЕ РАБОТАЕТ
         name_book = self.name_book_entry.currentText() #todo: если будет время - сделать, чтобы выданные книги исчезали из выпадающего списка. ну ил пофииг
         user_id = self.name_user_entry.currentText()
+        print(user_id)
 
         self.cur.execute('''UPDATE books SET available = 0 WHERE title = ? AND available = 1''', (name_book,))
         # проверка сущетсвования книги в БД
@@ -138,6 +143,8 @@ class MainWindow(QMainWindow):
             self.name_user_entry.setCurrentIndex(-1)
             return
         name_user = self.cur.execute("SELECT name FROM users WHERE user_id = ?", (int(user_id),)).fetchall()
+        #не доходит до сюда
+        print(name_user)
         self.cur.execute('''INSERT INTO issue_log (user_id, name_user, name_book, data) VALUES (?, ?, ?, ?)''', (user_id, name_user[0][0], name_book, date.today()))
         self.conn.commit()
         self.output.clear()
