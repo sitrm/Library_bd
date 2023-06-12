@@ -12,6 +12,8 @@ cur.execute('''CREATE TABLE IF NOT EXISTS issue_log
              FOREIGN KEY(name_user) REFERENCES users(name),
              FOREIGN KEY(name_book) REFERENCES books(title))''')
 
+
+#cur.execute('DROP TABLE issue_log')
 conn.commit()
 
 

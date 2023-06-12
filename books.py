@@ -165,6 +165,9 @@ class BooksWin(QMainWindow):
         if len(genre) == 0:
             self.output.clear()
             return self.output.append(f'Введите жанр книги!')
+        if not year.isdigit():
+            self.output.clear()
+            return self.output.append(f'Введите корректно год издания книги!')
         # добавляем книгу в базу данных
         self.cur.execute('INSERT OR REPLACE INTO books (title, author, genre, year, available) VALUES (?, ?, ?, ?, ?)',
                          (title, author, genre, year, 1))

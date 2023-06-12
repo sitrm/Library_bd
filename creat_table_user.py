@@ -8,7 +8,7 @@ cur.execute('''CREATE TABLE IF NOT EXISTS users
              (user_id INTEGER PRIMARY KEY AUTOINCREMENT,
              name TEXT,
              rang INTEGER,
-             phone TEXT)''')
+             phone TEXT NOT NULL)''')
 
 # Вставка данных в таблицу books
 
@@ -27,7 +27,7 @@ contents = [
     (17, 'Черкашин И', 2, '89052211347'),
     (18, 'Чернов Е', 3, '8905422433'), (19, 'Шалашов К', 1, '89053214421')
 ]
-cur.executemany("INSERT OR REPLACE INTO users VALUES(?, ?, ?, ?);", contents)
+#cur.executemany("INSERT OR REPLACE INTO users VALUES(?, ?, ?, ?);", contents)
 
 # сохранение изменений и закрытие соединени
 conn.commit()

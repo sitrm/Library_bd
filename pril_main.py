@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
             # проверка сущетсвования книги в БД
             if self.cur.rowcount == 0:
                 self.output.clear()
-                self.output.append(f'Этой книги нет в библиотеке! Возьмите другую')
+                self.output.append(f'Этой книги нет в библиотеке! Возьмите другую.')
                 self.name_book_entry.setCurrentIndex(-1)
                 self.name_user_entry.setCurrentIndex(-1)
                 return
@@ -179,9 +179,10 @@ class MainWindow(QMainWindow):
         if books is None:  #TODO: даже если все книги возвращены - всё равно не выводит эту надпись
             self.output.clear()
             self.output.append(f"Все книги возвращены")
+        i = 1
         for cur_book in books:
-            self.output.append(f' {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: пока убрал индексы (cur_book[0])
-                                                                                #todo:раз они выводятся неправильно, надо в самой базе данных чекнуть чё за х
+            self.output.append(f'{i}) {cur_book[1]}, {cur_book[2]}, {cur_book[3]}')  #tODO: пока убрал индексы (cur_book[0])
+            i+=1                                                   #todo:раз они выводятся неправильно, надо в самой базе данных чекнуть чё за х
 
         self.name_book_entry.setCurrentIndex(-1)  # очищение поля
 
