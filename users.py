@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit
 import sqlite3
 
-class UsersWin(QMainWindow):
+class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в телефоне 11 цифр - DONE
 
     def __init__(self):
         super().__init__()
@@ -132,11 +132,16 @@ class UsersWin(QMainWindow):
             return self.output.append(f'Имя пользоватлея введено не корректно! Оно должно содержать только буквы!')
         if not rang.isnumeric():
             self.output.clear()
-            return self.output.append(f'Ранг введен не корректно! Введите целое число!')
+            return self.output.append(f'Ранг введен не корректно! Введите целое положительное число!')
+        if int(rang) > 3 or int(rang) < 1:
+            self.output.clear()
+            return self.output.append('Ранг должен быть целым числом от 1 до 3')
         if not phone.isnumeric():
             self.output.clear()
             return self.output.append(f'Телефон пользоватлея введен не корректно! Номер телефона должен содержать только числа!')
-
+        if len(phone)!=11:
+            self.output.clear()
+            return self.output.append('Такого номера не существует')
         if name == '':
             self.output.clear()
             return self.output.append(f'Введите имя читателя!')

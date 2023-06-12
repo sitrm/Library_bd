@@ -5,7 +5,7 @@ from users import UsersWin
 import sqlite3
 from datetime import date
 
-
+#TODO: некоторые добавленные книги нельзя выдать, их как бы не существует
 # TODO: ПРОБЛЕМЫ с ID при выдаче!!!! отсортировать выпадающие списки по алфавиту. А если убирать выданные книги из списка?
 
 class MainWindow(QMainWindow):

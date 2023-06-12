@@ -2,6 +2,8 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
 
+#TODO: добавленные книги автоматически выдаются?
+#TODO: проверки!!!
 #TODO: сортировать по фамилии автора, а не по имени
 #TODO: подумать по поводу нескольких галочек сразу в сортировке - DONE!
 
@@ -149,6 +151,15 @@ class BooksWin(QMainWindow):
         author = self.author_entry.text()
         year = self.year_entry.text()
         genre = self.genre_entry.text()
+
+        #----------ПРОВЕРКИ---------------
+        if len(author) == 0:
+            self.output.clear()
+            return self.output.append('введите автора книги')
+        if len(year) == 0:
+            year = "год неизвестен"
+        if len(genre) == 0:
+            genre = 'прочее'
         # добавляем книгу в базу данных
         self.cur.execute('INSERT OR REPLACE INTO books (title, author, genre, year) VALUES (?, ?, ?, ?)',
                          (title, author, genre, year))
