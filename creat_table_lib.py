@@ -10,17 +10,17 @@ cur.execute('''CREATE TABLE IF NOT EXISTS books
              author TEXT,
              genre TEXT,
              year INTEGER NOT NULL, 
-             available INTEGER )''')
+             available INTEGER DEFAULT 1 )''')
 
 # Вставка данных в таблицу books
-conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
-              VALUES (1, 'Война и мир', 'Лев Толстой', 'Роман', 1868, 1)")
-
-conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
-              VALUES (2, 'Преступление и наказание', 'Федор Достоевский', 'Роман', 1866, 1)")
-
-conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
-              VALUES (3, 'Мастер и Маргарита', 'Михаил Булгаков', 'Роман', 1967, 1)")
+# conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
+#               VALUES (1, 'Война и мир', 'Лев Толстой', 'Роман', 1868, 1)")
+#
+# conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
+#               VALUES (2, 'Преступление и наказание', 'Федор Достоевский', 'Роман', 1866, 1)")
+#
+# conn.execute("INSERT OR REPLACE INTO books (book_id, title, author, genre, year, available) \
+#               VALUES (3, 'Мастер и Маргарита', 'Михаил Булгаков', 'Роман', 1967, 1)")
 contents1 = [
     (4, '1984', 'Джордж Оруэлл', 'Антиутопия', 1949, 1), (5, 'Анна Карнеина', "Лев Толстой", "Роман", 1877, 1),
     (6, "Маленький принц", "Антуан де Сент-Экзюпери", "Сказка", 1943, 1),
@@ -28,7 +28,7 @@ contents1 = [
     (8, "Властелин колец", "Дж. Толкин", "Фэнтези", 1954, 1), (9, "Унесенный ветром", "Маргарет Митчел", "Роман", 1936, 1),
     (10, "Финансист", "Теодор Драйзер", "Роман", 1912, 1), (11, "О дивный новый мир", "Олдос Хаксли", "Антиутопия", 1931, 1)
 ]
-cur.executemany("INSERT OR REPLACE INTO books VALUES(?, ?, ?, ?, ?, ?);", contents1)
+#cur.executemany("INSERT OR REPLACE INTO books VALUES(?, ?, ?, ?, ?, ?);", contents1)
 contents2 = [(12, "Тихий дон", "Михал Шолохов", "Роман-эпопея", 1940, 1),
              (13, "Братья карамазовы", "Федор Достоевский", "Роман-трагедия", 1880, 1),
              (14, "Евгений Онегин", "Алесандр Пушкин", "Роман в стихах", 1883, 1),
@@ -45,7 +45,7 @@ contents2 = [(12, "Тихий дон", "Михал Шолохов", "Роман-
              (28, "Пиковая дама", "Александр Пушкин", "Повесть", 1834, 1),
              (29, "Сказка о царе Салтане", "Александр Пушкин", "Сказка", 1831, 1),
              (30, "Ночной дозор", "Сергей Лукьяненко", "Ужасы", 1998, 1)]
-cur.executemany("INSERT OR REPLACE INTO books VALUES(?, ?, ?, ?, ?, ?);", contents2)
+#cur.executemany("INSERT OR REPLACE INTO books VALUES(?, ?, ?, ?, ?, ?);", contents2)
 #новый столбез наличия книг
 # cur.execute('ALTER TABLE books ADD availability TEXT')
 # cur.execute('ALTER TABLE books ALTER COLUMN availability INTEGER')

@@ -155,20 +155,28 @@ class BooksWin(QMainWindow):
         #----------ПРОВЕРКИ---------------
         if len(author) == 0:
             self.output.clear()
-            return self.output.append('введите автора книги')
+            return self.output.append('Введите автора книги!')
+        if len(title) == 0:
+            self.output.clear()
+            return self.output.append(f'Введите название книги!')
         if len(year) == 0:
-            year = "год неизвестен"
+            self.output.clear()
+            return self.output.append(f'Введите год книги!')
         if len(genre) == 0:
-            genre = 'прочее'
+            self.output.clear()
+            return self.output.append(f'Введите жанр книги!')
         # добавляем книгу в базу данных
-        self.cur.execute('INSERT OR REPLACE INTO books (title, author, genre, year) VALUES (?, ?, ?, ?)',
-                         (title, author, genre, year))
+        self.cur.execute('INSERT OR REPLACE INTO books (title, author, genre, year, available) VALUES (?, ?, ?, ?, ?)',
+                         (title, author, genre, year, 1))
         self.conn.commit()
         # очищаем поля ввода!!!!!
         self.title_entry.setText('')
         self.author_entry.setText('')
         self.year_entry.setText('')
         self.genre_entry.setText('')
+
+        self.output.clear()
+        self.output.append(f'Книга "{title}" успешно добавлена!')
 
     # функция для вывода списка книг из базы данных
     def show_books(self):
