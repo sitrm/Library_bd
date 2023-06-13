@@ -1,11 +1,9 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
 
-#TODO: добавленные книги автоматически выдаются?
-#TODO: проверки!!!
-#TODO: сортировать по фамилии автора, а не по имени
-#TODO: подумать по поводу нескольких галочек сразу в сортировке - DONE!
+#TODO: а если объединить в наличии и что-нибудь ещё
+#TODO: я думал об этом, но считаю что хватит мудрить...
 
 class BooksWin(QMainWindow):
 
@@ -48,15 +46,15 @@ class BooksWin(QMainWindow):
         self.checkbox_issue.setGeometry(300, 110, 150, 20)
         self.checkbox_issue.setChecked(False)
 
-        self.checkbox_asc_book = QCheckBox("по алфавиту книг", self)
+        self.checkbox_asc_book = QCheckBox("по названию", self)
         self.checkbox_asc_book.setGeometry(300, 50, 150, 20)
         self.checkbox_asc_book.setChecked(False)
 
-        self.checkbox_asc_author = QCheckBox('по алфавиту авторов', self)
+        self.checkbox_asc_author = QCheckBox('по фамилии автора', self)
         self.checkbox_asc_author.setGeometry(300, 70, 150, 20)
         self.checkbox_asc_author.setChecked(False)
 
-        self.checkbox_desc_year = QCheckBox('по убыванию года издания', self)
+        self.checkbox_desc_year = QCheckBox('по году издания', self)
         self.checkbox_desc_year.setGeometry(300, 90, 180, 20)
         self.checkbox_desc_year.setChecked(False)
 
@@ -187,8 +185,12 @@ class BooksWin(QMainWindow):
             self.cur.execute('SELECT * FROM books ORDER BY title ASC')
             books = self.cur.fetchall()
         elif self.checkbox_asc_author.isChecked():
-            self.cur.execute('SELECT * FROM books ORDER BY author ASC')
+            # self.cur.execute('SELECT * FROM books ORDER BY author ASC')
+            # books = self.cur.fetchall()
+            self.cur.execute('SELECT * FROM books ORDER BY SUBSTR(author, INSTR(author, " ") + 1)')
+            # я этот грёбанный запрос формировал час. -ооо прикольно не знал такого!
             books = self.cur.fetchall()
+
         elif self.checkbox_desc_year.isChecked():
             self.cur.execute('SELECT * FROM books ORDER BY year DESC')
             books = self.cur.fetchall()

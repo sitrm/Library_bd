@@ -5,7 +5,8 @@ from users import UsersWin
 import sqlite3
 from datetime import date
 
-#TODO: некоторые добавленные книги нельзя выдать, их как бы не существует
+
+#todo: сломал выдачу книг, добавив людей с одинаковыми фио
 # TODO: ПРОБЛЕМЫ с ID при выдаче!!!! отсортировать выпадающие списки по алфавиту. А если убирать выданные книги из списка?
 
 class MainWindow(QMainWindow):
@@ -111,11 +112,13 @@ class MainWindow(QMainWindow):
                           cur_id in self.cur.execute("""SELECT user_id FROM users""").fetchall()]
         self.arr_id_name = []
         for id_, name in zip(list(map(str, self.item_user_id)), self.item_user_name):
-            self.arr_id_name.append(f'id-{id_}, {name}')
+            self.arr_id_name.append(f'id-{id_} , {name}')
         self.name_user_entry.addItems(self.arr_id_name)
         self.name_user_entry.setCurrentIndex(-1)
 
         self.show()
+
+#-----------------------------------------------------------функции----------------------------------------------------------------------------
     def openBooksWindow(self):
         self.books_window = BooksWin()
         self.books_window.show()
@@ -126,8 +129,8 @@ class MainWindow(QMainWindow):
 
     # функция выдачи книг
     def issue_book(self):
-        name_book = self.name_book_entry.currentText() #todo: если будет время - сделать, чтобы выданные книги исчезали из выпадающего списка. ну ил пофииг
-        user_id = self.name_user_entry.currentText()
+        name_book = self.name_book_entry.currentText() #TODO: починил. Проблема была в том, что в user_id мы передевали f-строку. 
+        user_id = self.name_user_entry.currentText()[3] + self.name_user_entry.currentText()[4]
 
         self.cur.execute('''UPDATE books SET available = 0 WHERE title = ? AND available = 1''', (name_book,))
         # проверка сущетсвования книги в БД
@@ -136,8 +139,9 @@ class MainWindow(QMainWindow):
             self.output.append(f'Этой книги нет в библиотеке! Возьмите другую.')
             self.name_book_entry.setCurrentIndex(-1)
             self.name_user_entry.setCurrentIndex(-1)
-            return
+
         name_user = self.cur.execute("SELECT name FROM users WHERE user_id = ?", (int(user_id),)).fetchall()
+
         self.cur.execute('''INSERT INTO issue_log (user_id, name_user, name_book, data) VALUES (?, ?, ?, ?)''', (user_id, name_user[0][0], name_book, date.today()))
         self.conn.commit()
         self.output.clear()
