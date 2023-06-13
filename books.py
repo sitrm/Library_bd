@@ -2,8 +2,15 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QTextEdit, QCheckBox
 import sqlite3
 
+<<<<<<< HEAD
 #TODO: а если объединить в наличии и что-нибудь ещё
 #TODO: я думал об этом, но считаю что хватит мудрить...
+=======
+
+
+
+#TODO: а если объединить в наличии и что-нибудь ещё
+>>>>>>> cf6f64eb306c037c9bd82e756eab112a3ef2476f
 
 class BooksWin(QMainWindow):
 
@@ -188,7 +195,11 @@ class BooksWin(QMainWindow):
             # self.cur.execute('SELECT * FROM books ORDER BY author ASC')
             # books = self.cur.fetchall()
             self.cur.execute('SELECT * FROM books ORDER BY SUBSTR(author, INSTR(author, " ") + 1)')
+<<<<<<< HEAD
             # я этот грёбанный запрос формировал час. -ооо прикольно не знал такого!
+=======
+            # я этот грёбанный запрос формировал час
+>>>>>>> cf6f64eb306c037c9bd82e756eab112a3ef2476f
             books = self.cur.fetchall()
 
         elif self.checkbox_desc_year.isChecked():
