@@ -128,16 +128,9 @@ class MainWindow(QMainWindow):
         self.users_window.show()
 
     # функция выдачи книг
-<<<<<<< HEAD
     def issue_book(self):
-        name_book = self.name_book_entry.currentText() #TODO: починил. Проблема была в том, что в user_id мы передевали f-строку. 
+        name_book = self.name_book_entry.currentText() #TODO: починил. Проблема была в том, что в user_id мы передевали f-строку.
         user_id = self.name_user_entry.currentText()[3] + self.name_user_entry.currentText()[4]
-=======
-    def issue_book(self):   #todo: НЕ РАБОТАЕТ
-        name_book = self.name_book_entry.currentText() #todo: если будет время - сделать, чтобы выданные книги исчезали из выпадающего списка. ну ил пофииг
-        user_id = self.name_user_entry.currentText()
-        print(user_id)
->>>>>>> cf6f64eb306c037c9bd82e756eab112a3ef2476f
 
         self.cur.execute('''UPDATE books SET available = 0 WHERE title = ? AND available = 1''', (name_book,))
         # проверка сущетсвования книги в БД
@@ -148,12 +141,7 @@ class MainWindow(QMainWindow):
             self.name_user_entry.setCurrentIndex(-1)
 
         name_user = self.cur.execute("SELECT name FROM users WHERE user_id = ?", (int(user_id),)).fetchall()
-<<<<<<< HEAD
 
-=======
-        #не доходит до сюда
-        print(name_user)
->>>>>>> cf6f64eb306c037c9bd82e756eab112a3ef2476f
         self.cur.execute('''INSERT INTO issue_log (user_id, name_user, name_book, data) VALUES (?, ?, ?, ?)''', (user_id, name_user[0][0], name_book, date.today()))
         self.conn.commit()
         self.output.clear()
