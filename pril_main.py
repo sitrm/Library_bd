@@ -130,7 +130,14 @@ class MainWindow(QMainWindow):
     # функция выдачи книг
     def issue_book(self):
         name_book = self.name_book_entry.currentText() #TODO: починил. Проблема была в том, что в user_id мы передевали f-строку.
-        user_id = self.name_user_entry.currentText()[3] + self.name_user_entry.currentText()[4]
+        user_id = self.name_user_entry.currentText()
+        user_id = user_id[3:user_id.find(',', 2)]
+        if name_book == '':
+            self.output.clear()
+            return self.output.append(f'Выберите книгу!')
+        if user_id == '':
+            self.output.clear()
+            return self.output.append(f'Для выдачи книги необходимо указать читателя! Укажите читателя!')
 
         self.cur.execute('''UPDATE books SET available = 0 WHERE title = ? AND available = 1''', (name_book,))
         # проверка сущетсвования книги в БД
@@ -152,6 +159,9 @@ class MainWindow(QMainWindow):
 
     def return_book(self):
         name_book = self.name_book_entry.currentText()
+        if name_book == '':
+            self.output.clear()
+            return self.output.append('Выберите книгу, которую хотите вернуть!')
         self.cur.execute('''SELECT * FROM issue_log WHERE name_book = ?''', (name_book,))
         issue = self.cur.fetchone()
         if issue is None:
