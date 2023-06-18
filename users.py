@@ -69,7 +69,7 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
         """)
         self.delete_entry = QLineEdit(self, placeholderText='id читателя')
         self.delete_entry.move(550, 110)
-        self.delete_button.clicked.connect(self.delete_user)
+        self.delete_button.clicked.connect(self.delete_reader)
 
         # -------------------------------------------кнопки------------------------------------------------
         self.add_button = QPushButton('Добавить читателя', self)
@@ -113,7 +113,7 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
             background-color: #fff;
         }
         """)
-        self.sort_button.clicked.connect(self.sort_user_rang)
+        self.sort_button.clicked.connect(self.sort_readers_rang)
 
         # создаем текстовый виджет для вывода списка людей
         self.output = QTextEdit(self)
@@ -176,7 +176,7 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
             i += 1
 
     #удалить пользователя
-    def delete_user(self):
+    def delete_reader(self):
         user_id = self.delete_entry.text()
         if not user_id.isnumeric():
             self.output.clear()
@@ -198,7 +198,7 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
             self.output.clear()
             self.output.append(f"Пользователь {name_user} успешно удален!")
 
-    def sort_user_rang(self):
+    def sort_readers_rang(self):
         sort_user = self.cur.execute("SELECT * FROM users ORDER BY rang DESC")
         self.output.clear()
         i = 1
