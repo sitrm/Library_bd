@@ -186,6 +186,7 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
         for cur_user_id in self.cur.execute('SELECT user_id FROM users').fetchall():
             if str(cur_user_id[0]) == user_id:#str бл!!!!!
                 flag = True
+
         if not flag:
             self.output.clear()
             return self.output.append(f"Пользователя с id - {user_id} не сущетсвует!")
@@ -200,9 +201,11 @@ class UsersWin(QMainWindow):  #TODO: ранг не больше трёх, в т�
     def sort_user_rang(self):
         sort_user = self.cur.execute("SELECT * FROM users ORDER BY rang DESC")
         self.output.clear()
+        i = 1
         for cur_sort_user in sort_user:
-            self.output.append(f"{cur_sort_user[0]}. {cur_sort_user[1]}, ранг {cur_sort_user[2]}, {cur_sort_user[3]};")
 
+            self.output.append(f"{i}) id - {cur_sort_user[0]}. {cur_sort_user[1]}, ранг {cur_sort_user[2]}, {cur_sort_user[3]};")
+            i +=1
 
     def closeEvent(self, event):
         # закрываем соединение с базой данных при закрытии приложения
